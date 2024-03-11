@@ -1,0 +1,22 @@
+
+#Used a Node.js image as the base image
+FROM node:14-alpine
+
+# Set the working directory inside the container
+WORKDIR /app
+
+#Copied package.json and package-lock.json files into the container
+COPY package*.json ./
+
+#Installed dependenciess only if packakge.json or package-lock.json has changed
+
+RUN npm install
+
+#Copy the rest of the application code into the container
+COPY . .
+
+#Expose port 300
+EXPOSE 3000
+
+#Start the developement server
+CMD ["npm", "start"]

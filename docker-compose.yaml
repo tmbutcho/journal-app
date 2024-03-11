@@ -1,0 +1,42 @@
+
+volumes:
+  my-journal-data:
+    external: true
+
+services:
+  api:
+    build:
+      context: ./api
+      dockerfile: ./Dockerfile.dev
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://journal_user:journal@postgres/journal_db
+    volumes:
+      - ./api:/app
+    depends_on:
+      - postgres
+
+
+  postgres:
+    image: postgres:14.5-bullseye
+    volumes:
+      - my-journal-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: journal
+      POSTGRES_USER: journal_user
+      POSTGRES_DB: journal_db
+
+    ports:
+      - 5432:5432
+
+
+
+  react:
+    build:
+      context: ./ghi
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./ghi:/app
