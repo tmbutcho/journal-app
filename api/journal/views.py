@@ -1,11 +1,17 @@
 from django.shortcuts import render
-from rest_framework.decorators import api_view
-from .models import JournalEntry
-from .serializers import JournalEntrySerializer
+from rest_framework.decorators import api_view, permission_classes
+from .models import JournalEntry, User
+from .serializers import JournalEntrySerializer, LoginSerializer, SignupSerializer, UserSerializer
 import json
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
+from django.middleware.csrf import get_token
+from django.views.decorators.csrf import ensure_csrf_cookie
+from rest_framework.authtoken.models import Token
+from rest_framework.permissions import AllowAny
+
+
 # Create your views here.
 
 
@@ -60,25 +66,66 @@ def show_entry_detail(request, id):
 
 
 
+@api_view(["GET"])
+def list_users(request):
+    if request.method == 'POST':
+        users = User.objects.all()
+        serializer = UserSerializer(users, many=True)
+        return JsonResponse(serializer.data)
 
 
 
 
 
+
+
+
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def signup_user(request):
+    if request.method == 'POST':
+        serializer = SignupSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse({'message': 'User created successfully'}, status=201)
+        else:
+            return JsonResponse(serializer.errors, status=400)
+    else:
+        return JsonResponse({'error': 'Method not allowed'}, status=405)
+
+
+
+
+
+
+
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
 def login_user(request):
     if request.method == "POST":
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-
-
-        user = authenticate(request, username=username, password=password)
-
-        if user is not None:
-            #Login the user
+        serializer = LoginSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.validated_data
             login(request, user)
             return JsonResponse({'message': 'Login Successful'}, status=200)
         else:
-            return JsonResponse({'error': 'Invalid credentials'}, status=400)
+            return JsonResponse(serializer.errors, status=400)
+    else:
+        return JsonResponse({'error': 'Method not allowed'}, status=405)
 
+
+
+
+
+
+
+def logout_user(request):
+    if request.method == "POST":
+        logout(request)
+    #return redirect('home) example if home was the name of the URL pattern i want it to go to.
+    # also i would have to import that function from the django.shortcuts module
+        return JsonResponse({'message': 'Logout sucessful'}, status=200)
     else:
         return JsonResponse({'error': 'Method not allowed'}, status=405)
