@@ -23,15 +23,9 @@ class UserSerializer(serializers.ModelSerializer):
 
 # serializers.py
 
-
-
-class LoginSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ['username', 'password']
-        extra_kwargs = {
-            'password': {'write_only': True}
-        }
+class LoginSerializer(serializers.Serializer):
+    username = serializers.CharField()
+    password = serializers.CharField(style={'input_type': 'password'})
 
     def validate(self, data):
         username = data.get('username')
@@ -40,6 +34,8 @@ class LoginSerializer(serializers.ModelSerializer):
         if username and password:
             user = authenticate(username=username, password=password)
             if user:
+                if not user.is_active:
+                    raise serializers.ValidationError("User account is disabled.")
                 return user
             else:
                 raise serializers.ValidationError("Unable to log in with provided credentials.")

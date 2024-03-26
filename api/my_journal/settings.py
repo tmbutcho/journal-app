@@ -29,9 +29,11 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 
+
 # Application definition
 
 INSTALLED_APPS = [
+    "corsheaders",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -45,6 +47,7 @@ MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
     # "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
@@ -71,7 +74,9 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "my_journal.wsgi.application"
 
-
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:3000',
+]
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 

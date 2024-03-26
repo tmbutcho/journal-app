@@ -7,14 +7,14 @@ from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from django.middleware.csrf import get_token
-from django.views.decorators.csrf import ensure_csrf_cookie
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import AllowAny
 
 
 # Create your views here.
 
-
+@csrf_exempt
 @login_required
 @api_view(['GET', 'POST'])
 def list_journal_entries(request):
@@ -38,7 +38,7 @@ def list_journal_entries(request):
         return JsonResponse({'error': 'Method not allowed'}, status=405)
 
 
-
+@csrf_exempt
 @login_required
 @api_view(['GET', 'PUT', 'DELETE' ])
 def show_entry_detail(request, id):
@@ -65,13 +65,13 @@ def show_entry_detail(request, id):
 
 
 
-
+@csrf_exempt
 @api_view(["GET"])
 def list_users(request):
-    if request.method == 'POST':
+    if request.method == 'GET':
         users = User.objects.all()
         serializer = UserSerializer(users, many=True)
-        return JsonResponse(serializer.data)
+        return JsonResponse(serializer.data, safe=False)
 
 
 
@@ -80,7 +80,7 @@ def list_users(request):
 
 
 
-
+@csrf_exempt
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def signup_user(request):
@@ -100,7 +100,7 @@ def signup_user(request):
 
 
 
-
+@csrf_exempt
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def login_user(request):
@@ -120,7 +120,7 @@ def login_user(request):
 
 
 
-
+@csrf_exempt
 def logout_user(request):
     if request.method == "POST":
         logout(request)
