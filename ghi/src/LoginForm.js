@@ -1,6 +1,8 @@
+// LoginForm.js
+
 import React, { useState } from 'react';
 
-function LoginForm() {
+function LoginForm({ onLoginSuccess }) {
   const [formData, setFormData] = useState({
     username: '',
     password: '',
@@ -22,15 +24,17 @@ function LoginForm() {
         body: JSON.stringify(formData),
       });
       if (response.ok) {
+        const data = await response.json();
+        const accessToken = data.access;
+        localStorage.setItem('token', accessToken);
         console.log('Login successful');
-        // Optionally, you can perform other actions after successful login
+        console.log(accessToken);
+        onLoginSuccess(); // Call the callback function to navigate
       } else {
         console.error('Failed to log in:', response.statusText);
-        // Optionally, you can show an error message here
       }
     } catch (error) {
       console.error('Error:', error.message);
-      // Optionally, you can show an error message here
     }
   };
 
@@ -52,4 +56,4 @@ function LoginForm() {
   );
 }
 
-export default LoginForm
+export default LoginForm;

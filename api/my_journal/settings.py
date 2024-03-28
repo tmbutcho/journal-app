@@ -34,13 +34,15 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     "corsheaders",
+    "rest_framework",
+    'rest_framework_simplejwt.token_blacklist',
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "journal.apps.JournalConfig"
+    "journal.apps.JournalConfig",
 ]
 
 MIDDLEWARE = [

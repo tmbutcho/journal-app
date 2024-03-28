@@ -10,12 +10,12 @@ from django.middleware.csrf import get_token
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import AllowAny
-
+from rest_framework_simplejwt.tokens import RefreshToken
 
 # Create your views here.
 
 @csrf_exempt
-@login_required
+# @login_required
 @api_view(['GET', 'POST'])
 def list_journal_entries(request):
     if request.method == 'GET':
@@ -109,7 +109,8 @@ def login_user(request):
         if serializer.is_valid():
             user = serializer.validated_data
             login(request, user)
-            return JsonResponse({'message': 'Login Successful'}, status=200)
+            refresh = RefreshToken.for_user(user)
+            return JsonResponse({'refresh': str(refresh), 'access': str(refresh.access_token)},status=200)
         else:
             return JsonResponse(serializer.errors, status=400)
     else:
