@@ -1,12 +1,12 @@
-// LoginForm.js
-
 import React, { useState } from 'react';
 
 function LoginForm({ onLoginSuccess }) {
   const [formData, setFormData] = useState({
     username: '',
-    password: '',
+    password: ''
   });
+
+  const [error, setError] = useState('');
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -23,18 +23,19 @@ function LoginForm({ onLoginSuccess }) {
         },
         body: JSON.stringify(formData),
       });
-      if (response.ok) {
-        const data = await response.json();
-        const accessToken = data.access;
-        localStorage.setItem('token', accessToken);
-        console.log('Login successful');
-        console.log(accessToken);
-        onLoginSuccess(); // Call the callback function to navigate
-      } else {
-        console.error('Failed to log in:', response.statusText);
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || 'Failed to login');
       }
+      const data = await response.json();
+      localStorage.setItem('accessToken', data.access);
+      localStorage.setItem('refreshToken', data.refresh);
+      console.log('Login successful');
+      onLoginSuccess(); // Call the callback function to navigate
+
     } catch (error) {
-      console.error('Error:', error.message);
+      setError(error.message);
     }
   };
 
@@ -42,6 +43,7 @@ function LoginForm({ onLoginSuccess }) {
     <div className="min-h-screen flex justify-center items-center bg-blue-200">
       <form onSubmit={handleSubmit} className="bg-white p-8 rounded-lg shadow-md">
         <h2 className="text-2xl font-bold mb-6">Login</h2>
+        {error && <div className="text-red-500 mb-4">{error}</div>}
         <div className="mb-4">
           <label htmlFor="username" className="block mb-2">Username:</label>
           <input type="text" id="username" name="username" value={formData.username} onChange={handleChange} className="w-full border border-gray-300 rounded-md p-2" />

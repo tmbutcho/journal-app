@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 function JournalEntries() {
   const [entries, setEntries] = useState([]);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     fetchEntries();
@@ -9,28 +10,28 @@ function JournalEntries() {
 
   const fetchEntries = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('accessToken');
       const response = await fetch('http://localhost:8000/journal-entries/', {
         headers: {
-          Authorization: `Token ${token}`,
+          Authorization: `Bearer ${token}`,
         },
       });
-      console.log("this is checking the token", token)
-      if (response.ok) {
-        const data = await response.json();
-        setEntries(data);
-        console.log("this is the data is it here?", data);
-      } else {
-        console.error('Failed to fetch journal entries:', response.statusText);
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch journal entries');
       }
+
+      const data = await response.json();
+      setEntries(data);
     } catch (error) {
-      console.error('Error:', error.message);
+      setError(error.message);
     }
   };
 
   return (
     <div>
       <h1>Journal Entries</h1>
+      {error && <p>Error: {error}</p>}
       <ul>
         {entries.map(entry => (
           <li key={entry.id}>
@@ -47,7 +48,6 @@ function JournalEntries() {
 }
 
 export default JournalEntries;
-
 
 // function JournalEntries() {
 //   const [entries, setEntries] = useState([]);
