@@ -39,7 +39,7 @@ def list_journal_entries(request):
 
 
 @csrf_exempt
-@login_required
+# @login_required
 @api_view(['GET', 'PUT', 'DELETE' ])
 def show_entry_detail(request, id):
     try:

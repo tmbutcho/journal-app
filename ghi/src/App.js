@@ -7,6 +7,7 @@ import LogoutForm from './LogoutForm'; // Import the LogoutForm component
 import Nav from './Nav';
 import Home from './Home';
 import JournalEntries from './JournalEntries';
+import EntryDetail from './EntryDetail';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -29,39 +30,21 @@ function App() {
 
   return (
     <BrowserRouter>
-      <Nav isLoggedIn={isLoggedIn} />
-      <div>
-        <Routes>
-          <Route path='/' element={<Home />} />
-          <Route path='/login' element={<LoginForm onLoginSuccess={handleLoginSuccess} />} />
-          <Route path='/signup' element={<SignupForm />} />
-          <Route path='/journals' element={<JournalEntries />} />
-          <Route path='/logout' element={<LogoutForm onLogout={handleLogout} />} /> // Add the logout route
-        </Routes>
-      </div>
+
+          <Nav isLoggedIn={isLoggedIn} />
+          <div>
+          <Routes>
+            <Route path='/' element={<Home />} />
+            <Route path='/login' element={<LoginForm onLoginSuccess={handleLoginSuccess} />} />
+            <Route path='/signup' element={<SignupForm />} />
+            <Route path='/journals' element={<JournalEntries />} />
+            <Route path='/logout' element={<LogoutForm onLogout={handleLogout} />} /> // Add the logout route
+            <Route path="/journals/:id" element={<EntryDetail />} /> {/* Detail route */}
+          </Routes>
+          </div>
+        \
     </BrowserRouter>
   );
 }
 
 export default App;
-
-
-
-// function App() {
-//   return (
-//   <BrowserRouter>
-//     <Nav/>
-//     <div>
-//       <Routes>
-//         <Route path='/' element={<Home/>}/>
-//         <Route path='/login' element={<LoginForm/>}/>
-//         <Route path='/signup' element={<SignupForm/>}/>
-//         <Route path='/journals' element={<JournalEntries/>}/>
-
-//       </Routes>
-//     </div>
-//   </BrowserRouter>
-//   );
-// }
-
-// export default App;
