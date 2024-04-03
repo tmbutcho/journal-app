@@ -21,6 +21,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 # serializers.py
 
+
 class LoginSerializer(serializers.Serializer):
     username = serializers.CharField()
     password = serializers.CharField(style={'input_type': 'password'})
@@ -30,15 +31,29 @@ class LoginSerializer(serializers.Serializer):
         password = data.get('password')
 
         if username and password:
-            user = authenticate(username=username, password=password)
-            if user:
-                if not user.is_active:
-                    raise serializers.ValidationError("User account is disabled.")
-                return user
-            else:
-                raise serializers.ValidationError("Unable to log in with provided credentials.")
+            # Include username and password in validated data
+            return {'username': username, 'password': password}
         else:
             raise serializers.ValidationError("Must include 'username' and 'password'.")
+
+# class LoginSerializer(serializers.Serializer):
+#     username = serializers.CharField()
+#     password = serializers.CharField(style={'input_type': 'password'})
+
+#     def validate(self, data):
+#         username = data.get('username')
+#         password = data.get('password')
+
+#         if username and password:
+#             user = authenticate(username=username, password=password)
+#             if user:
+#                 if not user.is_active:
+#                     raise serializers.ValidationError("User account is disabled.")
+#                 return user
+#             else:
+#                 raise serializers.ValidationError("Unable to log in with provided credentials.")
+#         else:
+#             raise serializers.ValidationError("Must include 'username' and 'password'.")
 
 
 

@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from .models import JournalEntry, User
 from .serializers import JournalEntrySerializer, LoginSerializer, SignupSerializer, UserSerializer
 import json
@@ -9,13 +9,17 @@ from django.contrib.auth import authenticate, login, logout
 from django.middleware.csrf import get_token
 from django.views.decorators.csrf import csrf_exempt
 
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
-
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework import status
 # Create your views here.
 
 @csrf_exempt
-# @login_required
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
 @api_view(['GET', 'POST'])
 def list_journal_entries(request):
     if request.method == 'GET':
@@ -94,26 +98,56 @@ def signup_user(request):
         return JsonResponse({'error': 'Method not allowed'}, status=405)
 
 
-
-
-
-
-
-@csrf_exempt
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def login_user(request):
     if request.method == "POST":
         serializer = LoginSerializer(data=request.data)
         if serializer.is_valid():
-            user = serializer.validated_data
-            login(request, user)
-            refresh = RefreshToken.for_user(user)
-            return JsonResponse({'refresh': str(refresh), 'access': str(refresh.access_token)},status=200)
+            # Retrieve username and password from serializer data
+            username = serializer.validated_data['username']
+            password = serializer.validated_data['password']
+
+            # Authenticate user
+            user = authenticate(request, username=username, password=password)
+
+            if user is not None:
+                # Login user
+                login(request, user)
+
+                # Generate tokens
+                refresh = RefreshToken.for_user(user)
+
+                # Return tokens in response
+                return Response({'refresh': str(refresh), 'access': str(refresh.access_token)}, status=status.HTTP_200_OK)
+            else:
+                # Invalid credentials
+                return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
         else:
-            return JsonResponse(serializer.errors, status=400)
+            # Invalid serializer data
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     else:
-        return JsonResponse({'error': 'Method not allowed'}, status=405)
+        # Method not allowed
+        return Response({'error': 'Method not allowed'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+
+
+
+# @csrf_exempt
+# @api_view(['POST'])
+# @permission_classes([AllowAny])
+# def login_user(request):
+#     if request.method == "POST":
+#         serializer = LoginSerializer(data=request.data)
+#         if serializer.is_valid():
+#             user = serializer.validated_data
+#             login(request, user)
+#             refresh = RefreshToken.for_user(user)
+#             return JsonResponse({'refresh': str(refresh), 'access': str(refresh.access_token)},status=200)
+#         else:
+#             return JsonResponse(serializer.errors, status=400)
+#     else:
+#         return JsonResponse({'error': 'Method not allowed'}, status=405)
 
 
 

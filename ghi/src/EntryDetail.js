@@ -39,7 +39,7 @@ function JournalEntryDetail() {
         {entry && (
           <div>
             <p className="mb-4"><strong>Title:</strong> {entry.title}</p>
-            <p className="mb-4"><strong>Image:</strong> <img src={`${process.env.REACT_APP_MEDIA_URL}${entry.image}`} alt={entry.title} className="rounded-lg" /></p>
+            <p className="mb-4"><strong>Image:</strong> <img src={`${`http://localhost:8000${entry.image}`}`} alt={entry.title} className="rounded-lg" /></p>
             <p className="mb-4"><strong>Text:</strong> {entry.text}</p>
             <p className="mb-4"><strong>Created At:</strong> {entry.created_at}</p>
             <p className="mb-4"><strong>Created By:</strong> {entry.created_by}</p>
