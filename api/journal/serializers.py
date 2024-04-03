@@ -4,11 +4,9 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from rest_framework import serializers
 class JournalEntrySerializer(serializers.ModelSerializer):
-    image = serializers.ImageField(max_length=None, use_url=True)
-
     class Meta:
         model = JournalEntry
-        fields = ['id', 'title', 'image', 'text', 'created_at', 'created_by']
+        fields = '__all__'
 
 
 

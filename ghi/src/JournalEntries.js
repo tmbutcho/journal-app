@@ -71,7 +71,7 @@ function JournalEntries() {
               <Link to={`/journals/${entry.id}`} className="block mb-2 font-semibold text-blue-600">
                 {entry.title}
               </Link>
-              <img src={`${process.env.REACT_APP_MEDIA_URL}${entry.image}`} alt={entry.title} className="mb-2 rounded-lg" />
+              {entry.image && <img src={`http://localhost:8000${entry.image}`} alt={entry.title} className="mb-2 rounded-lg h-64 w-64 object-cover" />}
               <p className="mb-2">{entry.text}</p>
               <p className="text-gray-600">Created At: {entry.created_at}</p>
               <p className="text-gray-600">Created By: {entry.created_by}</p>

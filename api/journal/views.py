@@ -25,8 +25,7 @@ def list_journal_entries(request):
 
     elif request.method == "POST":
 
-        data = request.POST.copy()
-        data['image'] = request.FILES.get('image')
+        data = json.loads(request.body)
         data['created_by'] = request.user.id
         serializer = JournalEntrySerializer(data=data)
         if serializer.is_valid():
